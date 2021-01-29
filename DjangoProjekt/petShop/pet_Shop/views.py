@@ -21,6 +21,7 @@ class CategoryDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     name = 'category-detail'
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, permissions.DjangoModelPermissionsOrAnonReadOnly, ]
 
 
 class ProductFilter(FilterSet):
@@ -46,6 +47,7 @@ class ProductDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     name = 'product-detail'
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, permissions.DjangoModelPermissionsOrAnonReadOnly, ]
 
 
 class OrderFilter(FilterSet):
@@ -69,6 +71,7 @@ class OrderDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Orders.objects.all()
     serializer_class = OrderSerializer
     name = 'orders-detail'
+    permission_classes = [permissions.IsAdminUser]
 
 
 class CustomerList(generics.ListCreateAPIView):
@@ -85,6 +88,7 @@ class CustomerDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Customers.objects.all()
     serializer_class = CustomerSerializer
     name = 'customers-detail'
+    permission_classes = [permissions.IsAdminUser]
 
 
 class PaymentList(generics.ListCreateAPIView):
@@ -100,6 +104,7 @@ class PaymentDetail(generics.RetrieveUpdateDestroyAPIView):
     name = 'payments-detail'
     search_fields = ['transaction_number']
     filterset_fields = ['transaction_number']
+    permission_classes = [permissions.IsAdminUser]
 
 
 class ApiRoot(generics.GenericAPIView):

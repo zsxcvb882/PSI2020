@@ -7,6 +7,8 @@ from . import views
 from .models import Customers, Category
 
 
+# TESTY DLA CUSTOMERS
+
 class CustomersTests(APITestCase):
 
     def post_customers(self, first_name, last_name, email, adress, phone_number):
@@ -132,3 +134,81 @@ class CustomersTests(APITestCase):
         assert patch_response.status_code == status.HTTP_200_OK
         assert patch_response.data['first_name'] == update_first_name
 
+
+# TESTY DLA CATEGORIES
+
+class CategoriesTests(APITestCase):
+
+    def post_categories(self, name, description):
+        url = reverse(views.CategoryList.name)
+        data = {'name': name, 'description': description}
+        response = self.client.post(url, data, format='json')
+        return response
+
+    def test_post_and_get_customers(self):
+        new_name = 'Pandy'
+        new_description = 'Egzotyczne zwierzęta'
+        response = self.post_categories(new_name, new_description)
+
+        assert response.status_code == status.HTTP_201_CREATED
+        assert Category.objects.count() == 1
+        assert Category.objects.get().name == new_name
+        assert Category.objects.get().description == new_description
+
+    def test_search_customers(self):
+        new_name = 'Pandy'
+        new_description = 'Egzotyczne zwierzęta'
+
+        new_name1 = 'Pandy1'
+        new_description1 = 'Egzotyczne zwierzęta1'
+
+        self.post_categories(new_name, new_description)
+        self.post_categories(new_name1, new_description1)
+
+        search_categories = {'name': new_name, 'description': new_description}
+        url = '{0}?{1}'.format(reverse(views.CategoryList.name), urlencode(search_categories))
+        response = self.client.get(url, format='json')
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data['count'] == 1
+        assert response.data['results'][0]['name'] == new_name
+        assert response.data['results'][0]['description'] == new_description
+
+    def test_delete_categories(self):
+        new_name = 'Pandy'
+        new_description = 'Egzotyczne zwierzęta'
+
+        response = self.post_categories(new_name, new_description)
+        url = urls.reverse(views.CategoryDetail.name, None, {response.data['pk']})
+        response = self.client.delete(url)
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        assert response.data is None
+
+    def test_update_customers(self):
+        new_name = 'Pandy'
+        new_description = 'Egzotyczne zwierzęta'
+
+        response = self.post_categories(new_name, new_description)
+        url = urls.reverse(views.CategoryDetail.name, None, {response.data['pk']})
+        update_name = 'Niedzwiedzie'
+        data = {'name': update_name}
+        patch_response = self.client.patch(url, data, format='json')
+        assert patch_response.status_code == status.HTTP_200_OK
+        assert patch_response.data['name'] == update_name
+
+    def test_filter_categories(self):
+        new_name = 'Pandy'
+        new_description = 'Egzotyczne zwierzęta'
+
+        new_name1 = 'Pandy'
+        new_description1 = 'Egzotyczne zwierzęta'
+
+        self.post_categories(new_name, new_description)
+        self.post_categories(new_name1, new_description1)
+
+        filter_categories = {'name': new_name, 'description': new_description}
+        url = '{0}?{1}'.format(reverse(views.CategoryList.name), urlencode(filter_categories))
+        response = self.client.get(url, format='json')
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data['count'] == 2
+        assert response.data['results'][0]['name'] == new_name
+        assert response.data['results'][0]['description'] == new_description

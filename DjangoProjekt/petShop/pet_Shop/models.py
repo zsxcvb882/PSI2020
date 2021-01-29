@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
-from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
+from django.core.validators import MinValueValidator
 import datetime
 
 
@@ -18,9 +18,6 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 class Category(models.Model):
     name = models.CharField(max_length=150)
     description = models.TextField()
-
-    def __str__(self):
-        return self.name
 
 
 class Product(models.Model):
@@ -47,12 +44,15 @@ class Customers(models.Model):
 
 class Orders(models.Model):
     product = models.ManyToManyField(Product, related_name='order')
-    customer = models.ForeignKey(Customers, on_delete=models.DO_NOTHING)
+    customer = models.ForeignKey(Customers, on_delete=models.SET_NULL, null=True)
     paid = models.BooleanField(default=False)
-    date = models.DateField(default=django.utils.timezone.now)
+    date = models.DateTimeField(default=datetime.datetime.now, editable=False)
+
+    def __str__(self):
+        return 'Użytkownik: ' + str(self.customer) + ' , ' + 'Data: ' + str(self.date) + ' , ID: ' + str(self.id)
 
 
 class Payments(models.Model):
-    order = models.ForeignKey(Orders, on_delete=models.DO_NOTHING)
+    order = models.ForeignKey(Orders, on_delete=models.CASCADE)
     transaction_number = models.IntegerField()
     date = models.DateField()

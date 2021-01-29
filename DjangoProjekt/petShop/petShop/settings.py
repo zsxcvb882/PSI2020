@@ -53,6 +53,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+DATE_INPUT_FORMATS = ('%d-%m-%Y','%Y-%m-%d')
+
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS':
         'pet_Shop.custompagination.LimitOffsetPaginationWithUpperBound',
@@ -122,6 +124,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+DATETIME_FORMAT = ['%d-%m-%Y %H-%M-%S']
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
