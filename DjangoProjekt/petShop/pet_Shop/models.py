@@ -1,5 +1,4 @@
-import django
-from MySQLdb import Date
+import crum
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
@@ -19,6 +18,9 @@ class Category(models.Model):
     name = models.CharField(max_length=150)
     description = models.TextField()
 
+    def __str__(self):
+        return self.name
+
 
 class Product(models.Model):
     name = models.CharField(max_length=150)
@@ -31,7 +33,7 @@ class Product(models.Model):
         return self.name
 
 
-class Customers(models.Model):
+class Employee(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     email = models.EmailField(max_length=100, default='email')
@@ -43,13 +45,19 @@ class Customers(models.Model):
 
 
 class Orders(models.Model):
+
+    def save(self, *args, **kwargs):
+        username = crum.get_current_user()
+        self.username = username.username
+        super(Orders, self).save(*args, **kwargs)
+
     product = models.ManyToManyField(Product, related_name='order')
-    customer = models.ForeignKey(Customers, on_delete=models.SET_NULL, null=True)
+    username = models.CharField(max_length=45, blank=True, default=crum.get_current_user(), editable=False)
     paid = models.BooleanField(default=False)
     date = models.DateTimeField(default=datetime.datetime.now, editable=False)
 
     def __str__(self):
-        return 'Użytkownik: ' + str(self.customer) + ' , ' + 'Data: ' + str(self.date) + ' , ID: ' + str(self.id)
+        return 'Użytkownik: ' + str(self.username) + ' , ' + 'Data: ' + str(self.date) + ' , ID: ' + str(self.id)
 
 
 class Payments(models.Model):

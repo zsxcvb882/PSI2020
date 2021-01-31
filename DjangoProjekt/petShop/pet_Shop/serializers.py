@@ -1,6 +1,5 @@
-
-from rest_framework import serializers, status
-from .models import Category, Product, Orders, Customers, Payments
+from rest_framework import serializers
+from .models import Category, Product, Orders, Employee, Payments
 
 
 class CategorySerializer(serializers.HyperlinkedModelSerializer):
@@ -21,17 +20,16 @@ class ProductSerializer(serializers.HyperlinkedModelSerializer):
 
 class OrderSerializer(serializers.HyperlinkedModelSerializer):
     product = serializers.HyperlinkedRelatedField(many=True, queryset=Product.objects.all(), view_name='product-detail')
-    customer = serializers.SlugRelatedField(queryset=Customers.objects.all(), slug_field='last_name')
 
     class Meta:
         model = Orders
-        fields = ['url', 'pk', 'product', 'customer', 'paid', 'date']
+        fields = ['url', 'pk', 'product', 'username', 'paid', 'date']
         depth = 1
 
 
-class CustomerSerializer(serializers.HyperlinkedModelSerializer):
+class EmployeeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Customers
+        model = Employee
         fields = ['url', 'pk', 'first_name', 'last_name', 'email', 'adress', 'phone_number']
 
 
