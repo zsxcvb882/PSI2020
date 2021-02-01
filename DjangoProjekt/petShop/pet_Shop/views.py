@@ -114,6 +114,6 @@ class ApiRoot(generics.GenericAPIView):
         return Response({'products': reverse(ProductList.name, request=request),
                          'categories': reverse(CategoryList.name, request=request),
                          'orders': reverse(OrderList.name, request=request),
-                         'customers': reverse(EmployeeList.name, request=request),
+                         'employees': reverse(EmployeeList.name, request=request),
                          'payments': reverse(PaymentList.name, request=request),
                          })
